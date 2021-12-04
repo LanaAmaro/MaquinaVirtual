@@ -118,33 +118,45 @@ public class Programas implements Software {
 
      // PROGRAMA 3 - Ordenação de Vetores com Bubble Sort
      public static Word[] progOrdenacaoDeVetoresComBubbleSort = new Word[] {
-    			/*0*/ new Word(Opcode.LDD,5,-1,50),
-        		/*1*/ new Word(Opcode.SUBI,5,-1,2), 
+    	     
+    		    /*0*/ new Word(Opcode.LDI,8,-1, 1),  
+    	        /*1*/ new Word(Opcode.LDI,9,-1, 32),  
+    	        /*2*/ new Word(Opcode.TRAP,8,-1,1),	
+    	        
+    	        /*3*/ new Word(Opcode.LDX,6,9,-1),
+    	        /*4*/ new Word(Opcode.ADDI,9,-1,1),
+    	        /*5*/ new Word(Opcode.TRAP,8,-1,1),
+    	        /*6*/ new Word(Opcode.SUBI,6,-1,1),
+    	        /*7*/ new Word(Opcode.JMPIEM,-1,6,9),
+    	        /*8*/ new Word(Opcode.JMP,-1,-1,4),
+    		 
+    			/*9*/  new Word(Opcode.LDD,5,-1,32),
+        		/*10*/ new Word(Opcode.SUBI,5,-1,2), 
 
-        		/*2*/ new Word(Opcode.LDD,0,-1,50),
-        		/*3*/ new Word(Opcode.LDI,1,-1,51),   
-        		/*4*/ new Word(Opcode.LDI,2,-1,52),    
-        		/*5*/ new Word(Opcode.LDX,3,1,-1),	   
-        		/*6*/ new Word(Opcode.LDX,4,2,-1),
-        		/*7*/ new Word(Opcode.SUBI,0,-1,2), 
-        		/*8*/ new Word(Opcode.SWAP,3,4,-1), 
-        		/*9*/ new Word(Opcode.STX,1,3,-1),
-        		/*10*/ new Word(Opcode.STX,2,4,-1),
-
-        		/*11*/ new Word(Opcode.JMPIEM,-1,0,19),
-
-        		/*12*/ new Word(Opcode.LDX,3,2,-1),
-        		/*13*/ new Word(Opcode.ADDI,1,-1,1),
-        		/*14*/ new Word(Opcode.ADDI,2,-1,1),
+        		/*11*/ new Word(Opcode.LDD,0,-1,32),
+        		/*12*/ new Word(Opcode.LDI,1,-1,33),   
+        		/*13*/ new Word(Opcode.LDI,2,-1,34),    
+        		/*14*/ new Word(Opcode.LDX,3,1,-1),	   
         		/*15*/ new Word(Opcode.LDX,4,2,-1),
-        		/*16*/ new Word(Opcode.SUBI,0,-1,1),
+        		/*16*/ new Word(Opcode.SUBI,0,-1,2), 
         		/*17*/ new Word(Opcode.SWAP,3,4,-1), 
-        		/*18*/ new Word(Opcode.JMP,-1,-1,9),
+        		/*18*/ new Word(Opcode.STX,1,3,-1),
+        		/*19*/ new Word(Opcode.STX,2,4,-1),
+
+        		/*20*/ new Word(Opcode.JMPIEM,-1,0,28),
+
+        		/*21*/ new Word(Opcode.LDX,3,2,-1),
+        		/*22*/ new Word(Opcode.ADDI,1,-1,1),
+        		/*23*/ new Word(Opcode.ADDI,2,-1,1),
+        		/*24*/ new Word(Opcode.LDX,4,2,-1),
+        		/*25*/ new Word(Opcode.SUBI,0,-1,1),
+        		/*26*/ new Word(Opcode.SWAP,3,4,-1), 
+        		/*27*/ new Word(Opcode.JMP,-1,-1,18),
         		
-        		/*19*/ new Word(Opcode.JMPIEM,-1,5,22),
-        		/*20*/ new Word(Opcode.SUBI,5,-1,1),
-        		/*21*/ new Word(Opcode.JMP,-1,-1,2),
-        		/*22*/ new Word(Opcode.STOP,-1,-1,-1),                
+        		/*28*/ new Word(Opcode.JMPIEM,-1,5,31),
+        		/*29*/ new Word(Opcode.SUBI,5,-1,1),
+        		/*30*/ new Word(Opcode.JMP,-1,-1,11),
+        		/*31*/ new Word(Opcode.STOP,-1,-1,-1),                
 
      };
      
