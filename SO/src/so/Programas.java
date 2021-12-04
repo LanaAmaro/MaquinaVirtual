@@ -43,7 +43,7 @@ public class Programas implements Software {
      /*0*/ new Word(Opcode.LDI,8,-1, 1),  
      /*1*/ new Word(Opcode.LDI,9,-1, 40),  
      /*2*/ new Word(Opcode.TRAP,8,-1,1),	 
-     /*3*/ new Word(Opcode.LDI,0,-1, 40),    // carregar para R0 o valor da quantidade de elementos da Seq. de Fibonacci, o qual estava gravado na posicao 100 da memoria
+     /*3*/ new Word(Opcode.LDD,0,-1, 40),    // carregar para R0 o valor da quantidade de elementos da Seq. de Fibonacci, o qual estava gravado na posicao 100 da memoria
      /*4*/ new Word(Opcode.LDI,5,-1,41),  	// Proxima posição de memoria para armazenamento dos termos calculados
      /*5*/ new Word(Opcode.LDI,6,-1, 30),    // Posição da trativa de valor menor que 0
      /*6*/ new Word(Opcode.JMPIL,6,0,-1),   // Se R0 < 0, salta para a posição de memoria defina em R6
@@ -83,33 +83,36 @@ public class Programas implements Software {
 
      // PROGRAMA 2 - Calcula de Fatorial
      public static Word[] progCalculaFatorial = new Word[] {
-      /*1*/ new Word(Opcode.LDD, 0, -1, 50),   // carregar para R0 o valor para calcular o fatorial, o qual estava gravado na posicao 50 da memoria
-      /*2*/ new Word(Opcode.LDI, 5, -1, 51),   // Proxima posição de memoria para armazenamento dos termos calculados
-      /*3*/ new Word(Opcode.LDI, 6, -1, 21),    // Posição da trativa de valor menor que 0
-      /*4*/ new Word(Opcode.JMPIL, 6, 0, -1),   // Se R0 < 0, salta para a posição de memoria defina em R6
-      /*5*/ new Word(Opcode.LDI, 6, -1, 23),    // Posição da trativa de valor igual a 0
-      /*6*/ new Word(Opcode.JMPIE, 6, 0, -1),   // Se R0 = 0, salta para a posição de memoria defina em R6
-      /*7*/ new Word(Opcode.ADD, 1, 0, -1),     // R1 = R0, R1 é o contador do programa para os termos já calculados
-      /*8*/ new Word(Opcode.LDI, 2, -1, 1),     // 1 termo do fatorial
-      /*9*/ new Word(Opcode.LDI, 3, -1, 1),     // 2 termo do fatorial
-      /*10*/ new Word(Opcode.MULT, 2, 3, -1),    // R2 = R2 * R3, termos do fatorial
-      /*11*/ new Word(Opcode.SUBI, 1, -1, 1),    // Decrementa o contador
-      /*12*/ new Word(Opcode.LDI, 4, -1, 25),    // Posição para o final do programa (COMANDO STOP)
-      /*13*/ new Word(Opcode.JMPIE, 4, 1, -1),   // valida se o contador chegou a ZERO, indicando que já processor todos os termos do fatorial
-      /*14*/ new Word(Opcode.LDI, 6, -1, 15),    // 15 é posição de mem do inicio do loop
-      /*15*/ new Word(Opcode.LDI, 7, -1, 100),   // final, restaura em R7 o valor final da memoria
-      /*16*/ new Word(Opcode.ADDI, 3, -1, 1),    // Pega o proximo termo para calcular o fatorial
-      /*17*/ new Word(Opcode.MULT, 2, 3, -1),    // R2 = R2 * R3, calcula o proximo termo do fatorial
-      /*18*/ new Word(Opcode.SUBI, 1, -1, 1),    // Decrementa o contador
-      /*19*/ new Word(Opcode.LDI, 4, -1, 25),    // Posição para o final do programa (COMANDO STOP)
-      /*20*/ new Word(Opcode.JMPIE, 4, 1, -1),   // valida se o contador chegou a ZERO, indicando que já processou todos os termos do fatorial
-      /*21*/ new Word(Opcode.JMPIG, 6, 1, -1),   // se R1(contador) for maior que zero salta para R6 (início do loop)
-      /*22*/ new Word(Opcode.LDI, 2, -1, -1),    // Numero escolhido é menor que ZERO, retorna  -1
-      /*23*/ new Word(Opcode.JMP, -1, -1, 25),   // salta para o final do programa (comando STOP)
-      /*24*/ new Word(Opcode.LDI, 2, -1, 1),     // Numero escolhido é IGUAL a ZERO, retorna 1
-      /*25*/ new Word(Opcode.JMP, -1, -1, 25),   // salta para o final do programa (comando STOP)
-      /*26*/ new Word(Opcode.STX, 5, 2, -1),     // salva na posição de memoria apontada por R5, o resultado do fatorial (R2)
-      /*27*/ new Word(Opcode.STOP, -1, -1, -1)   // FINALIZA O PROGRAMA
+      /*0*/ new Word(Opcode.LDI,8,-1, 1),  
+      /*1*/ new Word(Opcode.LDI,9,-1, 30),  
+      /*2*/ new Word(Opcode.TRAP,8,-1,1),	
+      /*3*/ new Word(Opcode.LDD, 0, -1, 30),   // carregar para R0 o valor para calcular o fatorial, o qual estava gravado na posicao 50 da memoria
+      /*4*/ new Word(Opcode.LDI, 5, -1, 31),   // Proxima posição de memoria para armazenamento dos termos calculados
+      /*5*/ new Word(Opcode.LDI, 6, -1, 23),    // Posição da trativa de valor menor que 0
+      /*6*/ new Word(Opcode.JMPIL, 6, 0, -1),   // Se R0 < 0, salta para a posição de memoria defina em R6
+      /*7*/ new Word(Opcode.LDI, 6, -1, 25),    // Posição da trativa de valor igual a 0
+      /*8*/ new Word(Opcode.JMPIE, 6, 0, -1),   // Se R0 = 0, salta para a posição de memoria defina em R6
+      /*9*/ new Word(Opcode.ADD, 1, 0, -1),     // R1 = R0, R1 é o contador do programa para os termos já calculados
+      /*10*/ new Word(Opcode.LDI, 2, -1, 1),     // 1 termo do fatorial
+      /*11*/ new Word(Opcode.LDI, 3, -1, 1),     // 2 termo do fatorial
+      /*12*/ new Word(Opcode.MULT, 2, 3, -1),    // R2 = R2 * R3, termos do fatorial
+      /*13*/ new Word(Opcode.SUBI, 1, -1, 1),    // Decrementa o contador
+      /*14*/ new Word(Opcode.LDI, 4, -1, 27),    // Posição para o final do programa (COMANDO STOP)
+      /*15*/ new Word(Opcode.JMPIE, 4, 1, -1),   // valida se o contador chegou a ZERO, indicando que já processor todos os termos do fatorial
+      /*16*/ new Word(Opcode.LDI, 6, -1, 17),    // 15 é posição de mem do inicio do loop
+      /*17*/ new Word(Opcode.LDI, 7, -1, 100),   // final, restaura em R7 o valor final da memoria
+      /*18*/ new Word(Opcode.ADDI, 3, -1, 1),    // Pega o proximo termo para calcular o fatorial
+      /*19*/ new Word(Opcode.MULT, 2, 3, -1),    // R2 = R2 * R3, calcula o proximo termo do fatorial
+      /*20*/ new Word(Opcode.SUBI, 1, -1, 1),    // Decrementa o contador
+      /*21*/ new Word(Opcode.LDI, 4, -1, 27),    // Posição para o final do programa (COMANDO STOP)
+      /*22*/ new Word(Opcode.JMPIE, 4, 1, -1),   // valida se o contador chegou a ZERO, indicando que já processou todos os termos do fatorial
+      /*23*/ new Word(Opcode.JMPIG, 6, 1, -1),   // se R1(contador) for maior que zero salta para R6 (início do loop)
+      /*24*/ new Word(Opcode.LDI, 2, -1, -1),    // Numero escolhido é menor que ZERO, retorna  -1
+      /*25*/ new Word(Opcode.JMP, -1, -1, 27),   // salta para o final do programa (comando STOP)
+      /*26*/ new Word(Opcode.LDI, 2, -1, 1),     // Numero escolhido é IGUAL a ZERO, retorna 1
+      /*27*/ new Word(Opcode.JMP, -1, -1, 28),   // salta para o final do programa (comando STOP)
+      /*28*/ new Word(Opcode.STX, 5, 2, -1),     // salva na posição de memoria apontada por R5, o resultado do fatorial (R2)
+      /*29*/ new Word(Opcode.STOP, -1, -1, -1)   // FINALIZA O PROGRAMA
      };
 
 

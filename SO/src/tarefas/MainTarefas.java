@@ -16,11 +16,19 @@ public class MainTarefas implements Tarefa {
 
         Console.debug(" > MainTask.run()");
 
-        Console.debug(" > Fibonacci");
-        Word[] fibonacci = Programas.progCalculoDeFibonacci;
-        PCB process = VM.get().pm.create(fibonacci);
+        /*Console.debug(" > Fibonacci");
+        
+       Word[] fibonacci = Programas.progCalculoDeFibonacci;
+        PCB processfibo = VM.get().pm.create(fibonacci);*/
+        
+        Console.debug(" > Fatorial"); 
+        
+        Word[] fatorial = Programas.progCalculaFatorial;
+        PCB processfat = VM.get().pm.create(fatorial);
+
         VM.get().escalonador.run();
-        VM.get().pm.finish(process);
+       // VM.get().pm.finish(processfibo);
+        VM.get().pm.finish(processfat);
     }
 
 }
