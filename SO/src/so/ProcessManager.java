@@ -12,8 +12,10 @@ import java.util.concurrent.Semaphore;
 
 public class ProcessManager {
     public ArrayList<ProcessControlBlock> pcbList;
-    private static ProcessManager INSTANCE;
+    private static int contProcessos = 0;
+    //private static ProcessManager INSTANCE;
     public MemoryManager mm;
+    private int idPCB;
     public int processId = 0;
     private Semaphore useList;
 
@@ -30,12 +32,12 @@ public class ProcessManager {
         try {
             useList.acquire();
         } catch (Exception e) {}
-            if(VM.pm.verificaEspaco(p.getTamanhoProg())){
+            if(VM.mm.verificaEspaco(p.getTamanhoProg())){
                 idPCB = contProcessos;
                 pcbList.add(new ProcessControlBlock(idPCB));
                 for(ProcessControlBlock it: pcbList){
                     if(idPCB == it.getId()){
-                        it.addPaginas(VM.gm.alocacao(p.getLogica(), p.getTamanhoProg()));
+                        it.addPaginas(VM.mm.alocacao(p.getLogica(), p.getTamanhoProg()));
                         it.setNome(p.getNome());
                         VM.fp.colocaNaFilaProntos(it);
                         contProcessos++;
@@ -60,7 +62,7 @@ public class ProcessManager {
             int cont = -1;
             for(int i=0; i<pcbList.size(); i++){
                 if(pcbList.get(i).getId() == ID){                
-                    VM.gm.desaloca(pcbList.get(i).getLista());
+                    VM.mm.desaloca(pcbList.get(i).getLista());
                     cont = i;
                     break;
                 }
