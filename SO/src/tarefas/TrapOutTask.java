@@ -2,8 +2,7 @@ package tarefas;
 
 import hardware.memoria.Memory;
 import hardware.memoria.Word;
-import so.Programas;
-
+import so.LogicaProgramas;
 import util.Auxi;
 import util.Console;
 
@@ -12,7 +11,7 @@ import vm.VM;
 public class TrapOutTask implements Tarefa {
     public void run() {                             Console.debug(" > TrapOutTask.run()");
         Auxi aux = new Auxi();
-        Word[] p = new Programas().trapOut;
+        Word[] p = new LogicaProgramas().trapOut;
         aux.cargaProgramaParaMemoria(p, Memory.get().data);
 //        VM.get().cpu.setContext(0);
         Console.log("\n---------------------------------- programa TRAP OUT ");

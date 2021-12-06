@@ -2,8 +2,7 @@ package tarefas;
 
 import hardware.memoria.Memory;
 import hardware.memoria.Word;
-import so.Programas;
-
+import so.LogicaProgramas;
 import util.Auxi;
 import util.Console;
 
@@ -13,7 +12,7 @@ public class TesteTrapTask implements Tarefa{
     public void run() {
         Console.debug(" > TesteTrapTask.run()");
         Auxi aux = new Auxi();
-        Word[] p = new Programas().testeTrap;
+        Word[] p = new LogicaProgramas().testeTrap;
         aux.cargaProgramaParaMemoria(p, Memory.get().data);
 //        VM.get().cpu.setContext(0);
         Console.log("\n---------------------------------- programa TesteTrapTask carregado ");

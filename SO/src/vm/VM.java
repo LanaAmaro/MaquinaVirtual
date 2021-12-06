@@ -1,53 +1,48 @@
 package vm;
 
+import java.util.concurrent.Semaphore;
 import hardware.cpu.CPU;
 import hardware.cpu.Opcode;
 import hardware.memoria.Memory;
+import hardware.memoria.Word;
 import so.Escalonador;
+import so.MemoryManager;
 import so.ProcessManager;
 import util.Console;
+import util.FilaProntos;
 
 public class VM {
+	public static int PAGE_SIZE;
 	private static VM INSTANCE;
-
-	public static int TAM_MEM;
-	public CPU cpu;
-
-	public ProcessManager pm;
+	public static Semaphore semConsole;
+	public static int MEM_SIZE;
+	public static Semaphore semESC;
+	public static CPU cpu;
+	public static ProcessManager pm;
+	public static FilaProntos fp;
+	public static Word[] m;
+	public static MemoryManager mm;
 	public Escalonador escalonador;
-
+	
     public VM(){   // vm deve ser configurada com endereço de tratamento de interrupcoes
-        
+		PAGE_SIZE = 16; //colocar o tamanho da pagina	
+		semConsole = new Semaphore(0);
+		semESC = new Semaphore(0);
+
     	// memória
-        TAM_MEM = 1024;
-		Memory.init(TAM_MEM);
-        
-        // cpu
-		cpu = CPU.init();
-		cpu.pc = 0;         // Alterar
+        MEM_SIZE = 1024;
+		Memory.init(MEM_SIZE);
+		m = new Word[MEM_SIZE]; // m ee a memoria
+		pm = new ProcessManager();
+		fp = new FilaProntos();
+		mm = new MemoryManager();
+        cpu = new CPU(m);
 
-		Inicializa();
+		//start nas trheads
+		cpu.start();
+		escalonador.start();
+
     }
-
-	private void Inicializa() {
-
-		Console.debug(" > VM.Inicializa() ");
-		// Inicializa kernel, OS e drivers (Software)
-
-		ProcessManager.init();
-		Escalonador.init();
-
-		pm = ProcessManager.get();
-		escalonador = Escalonador.get();
-	}
-
-
-	/**
-	 * Cria uma instância única para a classe VM.
-	 */
-	public static void init() {
-		if (INSTANCE == null) INSTANCE = new VM();
-	}
 
 	/**
 	 * @return instância única da VM.
