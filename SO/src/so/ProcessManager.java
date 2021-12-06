@@ -2,75 +2,73 @@ package so;
 
 import hardware.memoria.Word;
 import util.Console;
+import util.ProcessControlBlock;
+import vm.VM;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.Semaphore;
 
 public class ProcessManager {
+    public ArrayList<ProcessControlBlock> pcbList;
     private static ProcessManager INSTANCE;
-
     public MemoryManager mm;
-    public Queue<PCB> pcbList;
     public int processId = 0;
+    private Semaphore useList;
 
     public ProcessManager() {
-        this.mm = new MemoryManager();
-        this.pcbList = new LinkedList<>();
+        pcbList = new ArrayList<ProcessControlBlock>();
+        useList = new Semaphore(1);
     }
 
-    /**
-     * 
-     * @param p programa. Ex.: bubbleSort
-     * @return referência para o novo processo criado 
-     */
-    public PCB create(Word[] p) {            Console.debug(" > ProcessManager.create()");
-        PCB processControlBlock;
-
-        //ESPAÇO DAS INSTRUÇÕES + DADOS
-        int tam = p.length + 30;
-        
-        
-        if (mm.temEspacoParaAlocar(tam)) {
-            processControlBlock = new PCB(processId, mm.allocate(p));
-            ++processId;
-
-            pcbList.add(processControlBlock);
-        } else {
-            Console.error("Sem espaço na memória para criar o processo de ID:"+processId);
-            processControlBlock = null;
-        }
-
-        return processControlBlock;
+    //verifica se existe espaco em memoria para o programa, caso nao exista informa ao usuario
+    //caso exista, cria um process control block com um id, e adiciona o mesmo na lista de process control block do sistema
+    //libera o escalonador para escalonar
+    //ao terminar libera o useList
+    public void alocaPCB(Programas p){
+        try {
+            useList.acquire();
+        } catch (Exception e) {}
+            if(VM.pm.verificaEspaco(p.getTamanhoProg())){
+                idPCB = contProcessos;
+                pcbList.add(new ProcessControlBlock(idPCB));
+                for(ProcessControlBlock it: pcbList){
+                    if(idPCB == it.getId()){
+                        it.addPaginas(VM.gm.alocacao(p.getLogica(), p.getTamanhoProg()));
+                        it.setNome(p.getNome());
+                        VM.fp.colocaNaFilaProntos(it);
+                        contProcessos++;
+                        VM.semESC.release();
+                        break;
+                    }
+                }
+            }
+            else{
+                System.out.println("Sem Espaco na memoria para novos programas");
+            }
+            useList.release();
     }
 
-    public void finish(PCB processo) {
-        Console.debug(" > ProcessManager.finish()");
-        mm.unallocate(processo.getAllocatedPages());
-        pcbList.remove(processo);
-    }
-
-    public PCB getProcess(int id) {
-        if (pcbList.peek().getId() == id) {
-            return pcbList.peek();
-        } else {
-            Console.error("Não foi possível encontrar o processo de ID:"+processId);
-            return null;
-        }
-    }
-
-
-
-    /**
-     * Cria uma instância única para a classe ProcessManager.
-     */
-    public static void init() {
-        if (INSTANCE == null) INSTANCE = new ProcessManager();
-    }
-
-    /**
-     * @return instância única da ProcessManager.
-     */
-    public static ProcessManager get() {
-        return INSTANCE;
+    //recebe o id de um processo, verifica a existencia do mesmo
+    //pede para o gerente de memmoria desalocar esse processo da memoria
+    //ao terminar libera o useList
+    public void desalocaPCB(int ID){
+        try {
+            useList.acquire();
+        } catch (Exception e) {}
+            int cont = -1;
+            for(int i=0; i<pcbList.size(); i++){
+                if(pcbList.get(i).getId() == ID){                
+                    VM.gm.desaloca(pcbList.get(i).getLista());
+                    cont = i;
+                    break;
+                }
+            }
+            if(cont >= 0){
+                pcbList.remove(cont);
+                cont = -1;
+            }
+            useList.release();
     }
 }

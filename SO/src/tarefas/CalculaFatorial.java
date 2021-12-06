@@ -2,7 +2,7 @@ package tarefas;
 
 import hardware.memoria.Memory;
 import hardware.memoria.Word;
-import so.Programas;
+import so.LogicaProgramas;
 
 import util.Auxi;
 import util.Console;
@@ -13,7 +13,7 @@ public class CalculaFatorial implements Tarefa{
     public void run() {
         Console.debug(" > CalculaFatorial.run()");
         Auxi aux = new Auxi();
-        Word[] p = new Programas().progCalculoDeFibonacci;
+        Word[] p = new LogicaProgramas().progCalculoDeFibonacci;
         aux.cargaProgramaParaMemoria(p, Memory.get().data);
 //        VM.get().cpu.setContext(0);
         Console.log("\n---------------------------------- programa CalculaFatorial carregado ");

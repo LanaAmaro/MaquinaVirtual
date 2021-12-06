@@ -1,10 +1,14 @@
 package so;
 
-import vm.Interrupt;
+public enum PCB {
+    READY, BLOCKED, RUNNING
+}
+
+/**
+ * import vm.Interrupt;
 
 import java.util.ArrayList;
-
-public class PCB {
+ * public class PCB {
     public int id;
     public Interrupt interrupt;
     public ArrayList<Integer> allocatedPages;
@@ -34,6 +38,6 @@ public class PCB {
 
 }
 
-enum Status {
-    READY, BLOCKED, RUNNING
-}
+ */
+
+
