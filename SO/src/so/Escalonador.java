@@ -5,49 +5,69 @@ import vm.VM;
 
 import java.util.Queue;
 
+import hardware.cpu.Opcode;
+
 public class Escalonador extends Thread {
-    private static Escalonador INSTANCE;
+	private static Escalonador INSTANCE;
 
-    private volatile int contador;
+	private volatile int contador;
 
-    private Escalonador() {}
+	private PCB temp;
+	
 
+	private Escalonador() {
+	}
 
-    public void run() {                     Console.debug(" > Escalonador.run()");
-        while (true) {
-            Queue<PCB> processes = VM.get().pm.pcbList;
-            contador = 0;
+	public void run() {
 
-            while (contador == 0) {
-                if (processes.size() > 0) {
-                    processes.peek().status = Status.RUNNING;
-                    VM.get().cpu.setContext(
-                        processes.peek().allocatedPages, 
-                        processes.peek().pc, 
-                        processes.peek().id, 
-                        processes.peek().reg
-                    );
-                    processes.remove(processes.peek());
-                    VM.get().cpu.run();
-                    contador++;
-                }
-            }
-        }
-    }
+		Console.debug(" > Escalonador.run()");
 
+		Queue<PCB> processes = ProcessManager.pcbList;
 
+		while (processes.size() > 0) {
 
-    /**
-     * Cria uma instância única para a classe Escalonador.
-     */
-    public static void init() {
-        if (INSTANCE == null) INSTANCE = new Escalonador();
-    }
+			contador = 0;
 
-    /**
-     * @return instância única do Escalonador.
-     */
-    public static Escalonador get() {
-        return INSTANCE;
-    }
+			while (contador == 0) {
+
+				processes.peek().status = Status.RUNNING;
+
+				VM.get().cpu.setContext(processes.peek().allocatedPages, processes.peek().getPc(), processes.peek().id,
+						processes.peek().reg, processes.peek().name);
+				
+				VM.get().cpu.run();
+				
+				if (VM.get().cpu.memory.data[VM.get().cpu.translate(processes.peek().pc)].opc.equals(Opcode.STOP)) {
+					
+					VM.get().pm.finish(processes.peek());				
+
+				} else {
+
+					processes.peek().status = Status.READY;
+					processes.peek().setPc(VM.get().cpu.pc);
+					temp = processes.peek();
+					processes.remove(processes.peek());
+					processes.add(temp);
+				}
+
+				contador++;
+			}
+		}
+
+	}
+
+	/**
+	 * Cria uma instância única para a classe Escalonador.
+	 */
+	public static void init() {
+		if (INSTANCE == null)
+			INSTANCE = new Escalonador();
+	}
+
+	/**
+	 * @return instância única do Escalonador.
+	 */
+	public static Escalonador get() {
+		return INSTANCE;
+	}
 }

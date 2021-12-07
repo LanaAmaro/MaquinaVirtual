@@ -1,142 +1,134 @@
 package so;
 
-import hardware.cpu.Opcode;
 import hardware.memoria.Memory;
 import hardware.memoria.Word;
-import util.ProcessControlBlock;
 import vm.VM;
 
 import java.util.ArrayList;
 
 public class MemoryManager {
-    private int nPagi;
-    public static boolean[] availableFrames;
+	public final int MEMORY_SIZE = 1024;
+	public int pageSize;
+	public int frameSize;
+	public int frameCount;
+	public boolean[] availableFrames;
+	private int tamProg = 0;
 
+	public MemoryManager() {
+		this.frameSize = 16;
+		this.pageSize = 16;
+		this.frameCount = this.MEMORY_SIZE / this.pageSize;
 
-    //contrutor do gerente de memoria, 
-    //ao ser iniciado cria os frames a partir do tamanho da memoria / pelo tamanho da pagina, 
-    //inicia todos os frames com true ou false
-    public MemoryManager() {
-        for (int i = 0; i < VM.m.length; i++) {
-			VM.m[i] = new Word(Opcode.___, -1, -1, -1);
-		};
-        availableFrames = new boolean[(VM.MEM_SIZE / VM.PAGE_SIZE)];
-        for (int i = 0; i < availableFrames.length; i++) {
-            if(i%2 == 0){
-                availableFrames[i] = true;  // false = ocupado || true = livre
-            }else{
-                availableFrames[i] = true;
-            }        
-        }
-    }
+		// pageSize = frameSize = 16
+		// frameCount(64) || nroPaginas(64) = tamMemoria(1024) / pageSize(16)
+		availableFrames = initFrames(Memory.get().size, frameSize);
+	}
 
-        //verifica se existe espaco em memoria para alocar o programa informado pelo gerente de processos
-        public boolean verificaEspaco(int tamProg){
-            int aux;
-            if(tamProg%VM.PAGE_SIZE == 0){
-                aux = ((tamProg/VM.PAGE_SIZE));
-            }
-            else{
-                aux = ((tamProg/VM.PAGE_SIZE)+1);
-            }
-            int cont = 0;       
-            for(int i=0; i<availableFrames.length; i++){
-                if(availableFrames[i] == true){
-                    cont++;
-                }
-            }
-            if(cont >= aux){
-                return true;
-            }
-            return false;             
-        }
+	// Inicializa o array de frames com valor TRUE
+	private boolean[] initFrames(int tamMem, int pageSize) {
+		availableFrames = new boolean[(tamMem / pageSize)];
 
-        //ao receber um programa, calcula o tamanho dele e aloca em memoria
-        //retorna as paginas que esse programa irá usar em memoria
-    public ArrayList<Integer> alocacao(Word[] p, int tamProg) {
-        if(tamProg%VM.PAGE_SIZE == 0){
-            nPagi = ((tamProg/VM.PAGE_SIZE));
-        }
-        else{
-            nPagi = ((tamProg/VM.PAGE_SIZE)+1);
-        }
-        int cont = 0;
-        int posProg = 0;
+		for (int i = 0; i < availableFrames.length; i++) {
+			availableFrames[i] = true;
+		}
 
-        ArrayList <Integer> paginas = new ArrayList<>();
-        for(int i=0; i<availableFrames.length; i++){
-            if(availableFrames[i] == true){
-                cont++;
-                availableFrames[i] = false;
-                paginas.add(i);
-                for (int j=(i*VM.PAGE_SIZE); j<(i+1)*VM.PAGE_SIZE; j++) {
-                    if(posProg < p.length){
-                        VM.m[j].opc = p[posProg].opc;
-                        VM.m[j].r1 = p[posProg].r1;
-                        VM.m[j].r2 = p[posProg].r2;
-                        VM.m[j].p = p[posProg].p;
-                        posProg++;
-                    }
-                    else{
-                        break;
-                    }
-                }
-            }
-            if(cont == nPagi){ 
-                return paginas;
-            }
-        }    
-        return null;
-    }
+		return availableFrames;
+	}
 
-    //recebe uma lista de paginas de um processo do gerente de processos
-    //e desaloca esse programa da memoria
-    public void desaloca(ArrayList<Integer> paginas){
-        for(Integer p: paginas){
-            for(int j=0; j<availableFrames.length; j++){
-                if(p == j){
-                    availableFrames[j] = true;
-                    for (int k=(j*VM.PAGE_SIZE); k<(j+1)*VM.PAGE_SIZE; k++) {
-                        VM.m[k] = new Word(Opcode.___, -1, -1, -1);
-                    }
-                }
-            }
-        }
-    }
+	// Dada uma demanda em número de palavras, o gerente deve responder se a
+	// alocação é possível
+	public boolean temEspacoParaAlocar(int numeroPalavras) {
+		int quantidadeDeFramesQueVaiOcupar = 0;
 
-    //formata a impressao do dump de memoria
-    public void dump(Word w) {
-    System.out.print("[ " + w.opc + ", " + w.r1 + ", " + w.r2 + ", " + w.p + " ] " + "\n");
-    }
+		// Se for exatamente o tamanho da Pagina
+		if (numeroPalavras % frameSize == 0) {
+			quantidadeDeFramesQueVaiOcupar = ((numeroPalavras / frameSize));
+		}
+		// Se for quebrado o tamanho da pagina
+		else {
+			quantidadeDeFramesQueVaiOcupar = ((numeroPalavras / frameSize) + 1);
+		}
 
-    //imprime umm dump da memoria, na posicao ini até o fim informado por parametro
-    public void dump(int ini, int fim) {
-        for (int i = ini; i < fim; i++) {
-            System.out.print(i + ": ");
-            dump(VM.m[i]);
-        }
-    }
+		int quantidadeDeFramesDisponiveis = 0;
+		for (int i = 0; i < availableFrames.length; i++) {
+			if (availableFrames[i]) {
+				quantidadeDeFramesDisponiveis++;
+			}
+		}
 
-    //recebe o id de um processo e imprime esse processo com as informacoes do numero de vezes que passou pela cpu
-    //o nome e a causa da interrupcao do processo
-    public void dump(int id) {
-        for(ProcessControlBlock it: VM.pm.pcbList){
-            if(it.getId() == id){
-                System.out.println("\nPrograma "+it.getNome()+", ID = "+it.getId()+", Numero de vezes que passou na CPU = "+it.getNumVezesCPU()+", Causa da interrupcao = "+it.getIrtp());
-                for(Integer p: it.getLista()){
-                    for(int j=0; j<availableFrames.length; j++){
-                        if(p == j){
-                            for (int k=(j*VM.PAGE_SIZE); k<(j+1)*VM.PAGE_SIZE; k++) {
-                                System.out.print(k + ": ");
-                                dump(VM.m[k]);
-                            }
-                        }
-                    }
-                }
-            }
-        }        
-    }
+		return (quantidadeDeFramesQueVaiOcupar <= quantidadeDeFramesDisponiveis);
+	}
+
+	// Retornar o conjunto de frames alocados
+	// Retorna um array de inteiros com os índices dos frames.
+	public ArrayList<Integer> allocate(Word[] p) {
+		int quantidadeDeFramesQueVaiOcupar = 0;
+
+		tamProg = p.length + 30;
+
+		// Se for exatamente o tamanho da Pagina
+		if (tamProg % frameSize == 0) {
+			quantidadeDeFramesQueVaiOcupar = ((tamProg / frameSize));
+		}
+		// Se for quebrado o tamanho da pagina
+		else {
+			quantidadeDeFramesQueVaiOcupar = ((tamProg / frameSize) + 1);
+		}
+
+		int quantidadeNovosFramesOcupados = 0;
+		int posicao = 0;
+
+		ArrayList<Integer> paginas = new ArrayList<>();
+
+		for (int f = 0; f < availableFrames.length; f++) {
+
+			if (availableFrames[f] == true) {
+				
+				availableFrames[f] = false;
+				quantidadeNovosFramesOcupados++;
+				paginas.add(f);
+
+				for (int j = (f * frameSize); j < (f + 1) * frameSize; j++) {
+					
+					if (posicao < p.length) {
+
+						Memory.get().data[j].opc = p[posicao].opc;
+						Memory.get().data[j].r1 = p[posicao].r1;
+						Memory.get().data[j].r2 = p[posicao].r2;
+						Memory.get().data[j].p = p[posicao].p;
+						posicao++;
+					
+					} else {
+						
+						break;
+					}
+				}
+			}
+
+			if (quantidadeNovosFramesOcupados == quantidadeDeFramesQueVaiOcupar) {
+				return paginas;
+			}
+		}
+		return null;
+	}
+
+	// Dado um array de inteiros com as páginas de um processo, o gerente desloca as
+	// páginas.
+	public void unallocate(ArrayList<Integer> paginasAlocadas) {
+		for (Integer pagina : paginasAlocadas) {
+			for (int i = 0; i < availableFrames.length; i++) {
+				if (pagina == i) {
+
+					// Libera o frame
+					availableFrames[i] = true;
+
+					// Libera a memoria
+					for (int position = (i * frameSize); position < (i + 1) * frameSize; position++) {
+						Memory.get().write(Memory.BLANK, position);
+					}
+				}
+			}
+		}
+	}
+
 }
-
-
-

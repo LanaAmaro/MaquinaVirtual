@@ -2,7 +2,7 @@ package tarefas;
 
 import hardware.memoria.Memory;
 import hardware.memoria.Word;
-import so.LogicaProgramas;
+import so.Programas;
 
 import util.Auxi;
 import util.Console;
@@ -15,7 +15,7 @@ public class BubbleSortTask implements Tarefa{
     public void run() {
         Console.debug(" > BubbleSortTask.run()");
         Auxi aux = new Auxi();
-        Word[] p = new LogicaProgramas().progOrdenacaoDeVetoresComBubbleSort;
+        Word[] p = new Programas().progOrdenacaoDeVetoresComBubbleSort;
         aux.cargaProgramaParaMemoria(p, Memory.get().data);
 //        VM.get().cpu.setContext(0);
         Console.log("\n---------------------------------- programa bubbleSort carregado ");
