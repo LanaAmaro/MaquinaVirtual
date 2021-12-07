@@ -1,5 +1,5 @@
 package tarefas;
 
 public interface Tarefa {
-    void run();
+    void run() throws InterruptedException;
 }

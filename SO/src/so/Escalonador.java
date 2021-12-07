@@ -15,7 +15,7 @@ public class Escalonador extends Thread {
 	private PCB temp;
 	
 
-	private Escalonador() {
+	public Escalonador() {
 	}
 
 	public void run() {
@@ -30,7 +30,7 @@ public class Escalonador extends Thread {
 
 			while (contador == 0) {
 
-				processes.peek().status = Status.RUNNING;
+				processes.peek().status = StatusPCB.RUNNING;
 
 				VM.get().cpu.setContext(processes.peek().allocatedPages, processes.peek().getPc(), processes.peek().id,
 						processes.peek().reg, processes.peek().name);
@@ -43,7 +43,7 @@ public class Escalonador extends Thread {
 
 				} else {
 
-					processes.peek().status = Status.READY;
+					processes.peek().status = StatusPCB.READY;
 					processes.peek().setPc(VM.get().cpu.pc);
 					temp = processes.peek();
 					processes.remove(processes.peek());

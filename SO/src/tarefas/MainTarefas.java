@@ -9,7 +9,7 @@ import vm.VM;
 
 public class MainTarefas implements Tarefa {
 
-	public void run() {
+	public void run() throws InterruptedException {
 
 		Console.debug(" > MainTask.run()");
 

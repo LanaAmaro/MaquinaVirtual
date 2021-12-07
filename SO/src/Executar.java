@@ -4,8 +4,8 @@ import vm.VM;
 
 public class Executar {
 
-	@SuppressWarnings("unused")
-	public static void main(String[] args) {
+	//@SuppressWarnings("unused")
+	public static void main(String[] args) throws InterruptedException {
 
 		Console.info("Iniciando Máquina Virtual... ");
 		Console.wait(1200);

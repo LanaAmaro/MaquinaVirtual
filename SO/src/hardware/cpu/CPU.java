@@ -1,19 +1,17 @@
 package hardware.cpu;
-
-import hardware.memoria.Word;
-
-import util.Console;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import hardware.Hardware;
 import hardware.memoria.Memory;
+import hardware.memoria.Word;
 import so.MemoryManager;
-
-import vm.InterruptHandling;
+import util.Console;
 import vm.Interrupt;
+import vm.InterruptHandling;
 import vm.TrapHandling;
-
-import java.util.ArrayList;
-import java.util.List;
+import vm.VM;
 
 public class CPU extends Thread implements Hardware {
 	
@@ -21,30 +19,49 @@ public class CPU extends Thread implements Hardware {
     public int pc; 			// ... composto de program counter,
     public Word ir; 		// instruction register,
     public int[] registradores;       	// registradores da CPU
-
+    public int idIrptIo; //salva o id do processo em execucao
     private Word[] m;   // CPU acessa MEMORIA, guarda referencia 'm' a ela. memoria nao muda. ee sempre a mesma.
-
     public Memory memory; // CPU acessa MEMORIA, guarda referencia 'm' a ela. memoria nao muda. ee sempre a mesma.
     public Interrupt interrupt;
-
     public int CLOCK = 5; // Tempo em milissegundos para a execução de cada instrução
-
     private List<Integer> programPages;
     private int id;
     private String name;
     private MemoryManager memoryManager = new MemoryManager();
-
+    private Semaphore useCPU;
+    private Interrupt irpt; // durante instrucao, interrupcao pode ser sinalizada
+    public Interrupt irptIO;// durante instrucao, interrupcao pode ser sinalizada
 
     public CPU(Word[] _m) {     // ref a MEMORIA e interrupt handler passada na criacao da CPU
         m = _m; 				// usa o atributo 'm' para acessar a memoria.
         registradores = new int[10]; 		// aloca o espaço dos registradores reg = new int[8];
-                                // FASE 3: inclusão de mais 2 registros, para a operação TRAP: reg = new int[10];
+        useCPU = new Semaphore(1);
+        irptIO = Interrupt.noInterruptIO;
     }
 
+    
     public CPU() {
         this.memory = Memory.get();     // usa o atributo 'memory' para apontar para o atributo 'memory' da VM.
         this.registradores = new int[10];
+        useCPU = new Semaphore(1);
+        irptIO = Interrupt.noInterruptIO;
     }
+
+    
+        //seta o id do processo que teve uma interrupcao por IO
+        public void setIrpt(int idIrptIo){
+            this.idIrptIo = idIrptIo;
+        }
+
+        // seta todo o contexto do processo a ser executado na cpu
+        public void setContext(ArrayList<Integer> paginas, int pc, int id, int[] reg) {
+            this.pc = pc;
+            this.programPages = paginas;
+            this.id = id;
+            this.registradores = reg;
+            irpt = Interrupt.noInterrupt; // reset da interrupcao registrada
+    }
+
 
     public void setContext(ArrayList<Integer> paginas, int pc, int id, int[] reg, String name) {
         interrupt = Interrupt.NONE;
@@ -418,9 +435,9 @@ public class CPU extends Thread implements Hardware {
 	                break;  // finaliza o loop da CPU
 
 	            case TRAP:
-	                Console.print("\n");
-	                TrapHandling.trap(registradores);
-	                interrupt = Interrupt.NONE;
+	                Console.print("Chamada de sistema");
+	                VM.get().fpc.colocaNaFilaPedidosConsole(VM.get().pm.pcbList.peek());
+	                interrupt = Interrupt.STOP;
 	                break;
 	        }
 	        

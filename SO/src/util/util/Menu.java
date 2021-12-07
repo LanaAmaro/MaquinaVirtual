@@ -1,17 +1,6 @@
 package util;
 
-import hardware.memoria.Memory;
-import hardware.memoria.Word;
-import so.Programas;
-import tarefas.CalculoDeFibonacci;
 import tarefas.Tarefas;
-import vm.VM;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Random;
-import java.util.Scanner;
 
 public class Menu {
     private static Menu INSTANCE = new Menu();
@@ -28,7 +17,7 @@ public class Menu {
 
     private Menu() {}
 
-    public void MostrarMenu() {
+    public void MostrarMenu() throws InterruptedException {
         int input;
         do {
             showOptions(this.options);
@@ -39,6 +28,7 @@ public class Menu {
 
             switch (input) {
                 case 0:
+                
                     Console.info("Encerrando...");
                     Console.wait(800);
                     break;
