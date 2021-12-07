@@ -4,6 +4,7 @@ import java.util.Queue;
 
 import hardware.cpu.Opcode;
 import so.PCB;
+import so.StatusPCB;
 import util.Console;
 
 public class TrapHandling extends Thread {
@@ -32,6 +33,10 @@ public class TrapHandling extends Thread {
 					e.printStackTrace();
 				}
 			} else {
+				
+				VM.get().fp.filaProntos.peek().status = StatusPCB.BLOCKED;
+				VM.get().fb.colocaNaFilaBloqueados(VM.get().pm.pcbList.peek());
+				VM.get().fp.retiraDaFilaProntos();
 
 				int[] valor = pedidos.peek().reg;
 

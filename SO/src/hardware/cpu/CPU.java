@@ -8,6 +8,7 @@ import hardware.Hardware;
 import hardware.memoria.Memory;
 import hardware.memoria.Word;
 import so.MemoryManager;
+import so.StatusPCB;
 import util.Console;
 import vm.Interrupt;
 import vm.InterruptHandling;
@@ -355,7 +356,9 @@ public class CPU extends Thread implements Hardware {
 						break;
 
 					case TRAP:
-						interrupt = Interrupt.TRAP;
+						interrupt = Interrupt.STOP;
+						Console.debug("Solicita dispositivo");
+						VM.get().fpc.colocaNaFilaPedidosConsole(VM.get().pm.pcbList.peek());
 						pc++;
 						break;
 
@@ -405,7 +408,7 @@ public class CPU extends Thread implements Hardware {
 					break; // finaliza o loop da CPU
 
 				case TRAP:
-					Console.print("Chamada de sistema");
+					Console.debug("Solicita dispositivo");
 					VM.get().fpc.colocaNaFilaPedidosConsole(VM.get().pm.pcbList.peek());
 					interrupt = Interrupt.STOP;
 					break;
