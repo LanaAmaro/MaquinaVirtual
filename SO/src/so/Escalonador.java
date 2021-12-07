@@ -13,7 +13,6 @@ public class Escalonador extends Thread {
 	private volatile int contador;
 
 	private PCB temp;
-	
 
 	public Escalonador() {
 	}
@@ -22,7 +21,7 @@ public class Escalonador extends Thread {
 
 		Console.debug(" > Escalonador.run()");
 
-		Queue<PCB> processes = ProcessManager.pcbList;
+		Queue<PCB> processes = VM.get().fp.filaProntos;
 
 		while (processes.size() > 0) {
 
@@ -32,21 +31,18 @@ public class Escalonador extends Thread {
 
 				processes.peek().status = StatusPCB.RUNNING;
 
-				VM.get().cpu.setContext(processes.peek().allocatedPages, processes.peek().getPc(), processes.peek().id,
-						processes.peek().reg, processes.peek().name);
 				try {
 					VM.get().semCPU.acquire(1);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+
 				VM.get().cpu.run();
-				
-				VM.get().semCPU.release(1);
-				
+
 				if (VM.get().cpu.memory.data[VM.get().cpu.translate(processes.peek().pc)].opc.equals(Opcode.STOP)) {
-					
-					VM.get().pm.finish(processes.peek());				
+
+					VM.get().pm.finish(processes.peek());
 
 				} else {
 
@@ -59,8 +55,10 @@ public class Escalonador extends Thread {
 
 				contador++;
 			}
-		}
 
+			VM.get().semCPU.release(1);
+
+		}
 	}
 
 	/**

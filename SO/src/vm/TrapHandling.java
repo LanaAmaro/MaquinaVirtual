@@ -15,43 +15,47 @@ public class TrapHandling extends Thread {
 	}
 
 	public void run() {
-		
-		Console.debug(" > entrada/saída.run()");
-		
+
+		Console.debug("\n > entrada/saída.run()");
+
 		Queue<PCB> pedidos = VM.get().fpc.filaPedidosConsole;
 
-		if (pedidos.size() == 0) {
+		while (true) {
 
-			Console.debug("Aguardando pedidos...");
-			try {
-				Thread.sleep(10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
+			if (pedidos.size() == 0) {
 
-			int[] valor = pedidos.peek().reg;
+				Console.debug(" Aguardando pedidos...");
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
 
-			switch (valor[8]) {
+				int[] valor = pedidos.peek().reg;
 
-			case 1:
-				Console.log("ENTRADA");
-				Console.print("\n > Digite um valor inteiro para " + pedidos.peek().name + ":");
-				String input = Console.read();
+				switch (valor[8]) {
 
-				// Converte o input para um valor inteiro
-				int value = Integer.parseInt(input);
+				case 1:
+					Console.log("\nENTRADA");
+					Console.print("\n > Digite um valor inteiro para " + pedidos.peek().name + ":");
+					String input = Console.read();
 
-				VM.get().cpu.memory.data[VM.get().cpu.translate(valor[9])].opc = Opcode.DATA;
-				VM.get().cpu.memory.data[VM.get().cpu.translate(valor[9])].p = value;
+					// Converte o input para um valor inteiro
+					int value = Integer.parseInt(input);
 
-				break;
+					VM.get().cpu.memory.data[VM.get().cpu.translate(valor[9])].opc = Opcode.DATA;
+					VM.get().cpu.memory.data[VM.get().cpu.translate(valor[9])].p = value;
 
-			case 2:
-				Console.log("SAÍDA");
-				Console.log("Valor: " + VM.get().cpu.memory.data[VM.get().cpu.translate(valor[9])].p);
-				break;
+					break;
+
+				case 2:
+					Console.log("SAÍDA");
+					Console.log("Valor: " + VM.get().cpu.memory.data[VM.get().cpu.translate(valor[9])].p);
+					break;
+				}
+
 			}
 
 		}

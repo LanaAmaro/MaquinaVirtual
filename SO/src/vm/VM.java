@@ -34,16 +34,14 @@ public class VM {
 	public static Semaphore semCPU;
 	public static TrapHandling trap;
 
+	public VM() { // vm deve ser configurada com endereço de tratamento de interrupcoes
 
-
-	public VM(){   // vm deve ser configurada com endereço de tratamento de interrupcoes
-        
-    	// memória
-        TAM_MEM = 1024;
+		// memória
+		TAM_MEM = 1024;
 		Memory.init(TAM_MEM);
 		m = new Word[TAM_MEM]; // m ee a memoria
 		console = new Console();
-		//shell = new Shell();
+		// shell = new Shell();
 		escalonador = new Escalonador();
 		rotTrat = new InterruptHandling();
 		fp = new FilaProntos();
@@ -52,23 +50,22 @@ public class VM {
 		trap = new TrapHandling();
 		pm = new ProcessManager();
 		mm = new MemoryManager();
-		cpu = new CPU(m);
+		CPU cpu;
 		semESC = new Semaphore(0);
-		semCPU = new Semaphore(0);	
+		semCPU = new Semaphore(0);
 		semConsole = new Semaphore(0);
 
-
-        // cpu
+		// cpu
 		cpu = CPU.init();
-		cpu.pc = 0;         // Alterar
+		cpu.pc = 0; // Alterar
 		cpu.start();
-		escalonador.start();
-		//shell.start();
+		//escalonador.start();
+		// shell.start();
 		trap.start();
-		//console.start();
+		// console.start();
 
 		Inicializa();
-    }
+	}
 
 	private void Inicializa() {
 
@@ -81,12 +78,12 @@ public class VM {
 		escalonador = Escalonador.get();
 	}
 
-
 	/**
 	 * Cria uma instância única para a classe VM.
 	 */
 	public static void init() {
-		if (INSTANCE == null) INSTANCE = new VM();
+		if (INSTANCE == null)
+			INSTANCE = new VM();
 	}
 
 	/**
@@ -95,6 +92,5 @@ public class VM {
 	public static VM get() {
 		return INSTANCE;
 	}
-
 
 }
