@@ -34,8 +34,15 @@ public class Escalonador extends Thread {
 
 				VM.get().cpu.setContext(processes.peek().allocatedPages, processes.peek().getPc(), processes.peek().id,
 						processes.peek().reg, processes.peek().name);
-				
+				try {
+					VM.get().semCPU.acquire(1);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				VM.get().cpu.run();
+				
+				VM.get().semCPU.release(1);
 				
 				if (VM.get().cpu.memory.data[VM.get().cpu.translate(processes.peek().pc)].opc.equals(Opcode.STOP)) {
 					
